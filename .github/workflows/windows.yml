@@ -1,0 +1,57 @@
+name: Windows build and release
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Decide whether this version needs a release
+        id: release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $version = node -p "require('./package.json').version"
+          gh release view "v$version" --repo '${{ github.repository }}' --json tagName 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            'publish=false' >> $env:GITHUB_OUTPUT
+          } else {
+            'publish=true' >> $env:GITHUB_OUTPUT
+          }
+          exit 0
+      - name: Build installer
+        if: steps.release.outputs.publish != 'true'
+        run: npm run dist
+      - name: Build and publish GitHub Release
+        if: steps.release.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kuraiis-Playing-Windows
+          path: |
+            dist/*.exe
+            dist/*.blockmap
+            dist/latest.yml
+          if-no-files-found: error

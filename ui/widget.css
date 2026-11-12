@@ -1,0 +1,11 @@
+*{box-sizing:border-box}body{margin:0;background:transparent;font-family:'Segoe UI',sans-serif}#card{display:flex;gap:20px;align-items:center;overflow:hidden;max-width:100%;border:0}#art{flex-shrink:0;overflow:hidden;border-radius:12px;background:linear-gradient(135deg,#8B5CF6,#13141F);display:grid;place-items:center;position:relative}#cover{width:100%;height:100%;object-fit:cover}#note{position:absolute;font-size:46px;color:#FF4A7A}#info{min-width:0;flex:1}#title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}#artist{margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.62em}#status{font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:6px}#source{font-size:10px;margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#progress{margin-top:14px}#track{height:3px;background:#ffffff22;border-radius:4px;overflow:hidden}#fill{height:100%;width:0}#times{font-size:10px;display:flex;justify-content:space-between;margin-top:6px;font-variant-numeric:tabular-nums}#card.vertical{flex-direction:column;text-align:center}#card.vertical #info{width:100%}#card.minimal{gap:12px}#card.minimal #art{display:none!important}[hidden]{display:none!important}
+
+#title,#artist,#source,#status,#times{padding:4px 6px;margin-left:-6px;margin-right:-6px;line-height:1.5}#times{gap:8px}#note{color:#FF4A7A}
+
+#art.spotify-cropped #cover{position:absolute;width:128.205128%;height:128.205128%;max-width:none;left:-14.102564%;top:0;object-fit:fill}
+
+#card{position:relative;isolation:isolate}#album-backdrop{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}#album-backdrop-image{position:absolute;inset:-48px;background-size:cover;background-position:center}#album-backdrop-shade{position:absolute;inset:0}#card.artwork-background #track{background:#ffffff40}
+
+#card::after{content:"";position:absolute;inset:0;border:var(--container-border-width,0px) solid var(--container-border-color,transparent);border-radius:inherit;pointer-events:none;z-index:2}
+
+#fill{width:100%;transform:scaleX(0);transform-origin:left center;will-change:transform}

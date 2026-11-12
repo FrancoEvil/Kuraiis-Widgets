@@ -1,0 +1,70 @@
+{
+  "name": "kuraiis-playing",
+  "version": "1.4.0",
+  "description": "Kuraii's Playing · Widget personalizable para OBS",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never",
+    "test": "playwright test --workers=1",
+    "dist:portable": "electron-builder --win portable --publish never",
+    "release": "electron-builder --win nsis --publish always"
+  },
+  "keywords": [],
+  "author": "Kuraii",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "electron": "^45.3.0",
+    "electron-builder": "^26.18.0"
+  },
+  "productName": "Kuraii's Playing",
+  "build": {
+    "appId": "studio.nowplaying.desktop",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "ui/**/*",
+      "scripts/media.ps1",
+      "package.json",
+      "assets/**/*"
+    ],
+    "asarUnpack": [
+      "scripts/media.ps1"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "signAndEditExecutable": true,
+      "icon": "assets/app.png",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "compression": "normal",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "FrancoEvil",
+        "repo": "Kuraiis-Playing",
+        "releaseType": "release"
+      }
+    ],
+    "artifactName": "Kuraiis-Playing-Setup-${version}.${ext}"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FrancoEvil/Kuraiis-Playing.git"
+  },
+  "homepage": "https://github.com/FrancoEvil/Kuraiis-Playing"
+}
