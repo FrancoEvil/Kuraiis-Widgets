@@ -2,7 +2,6 @@ name: Windows build and release
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -32,21 +31,22 @@ jobs:
         shell: pwsh
         run: |
           $version = node -p "require('./package.json').version"
-          gh release view "v$version" --repo '${{ github.repository }}' --json tagName 2>$null
-          if ($LASTEXITCODE -eq 0) {
+          $assets = gh release view "v$version" --repo '${{ github.repository }}' --json assets --jq '.assets[].name' 2>$null
+          $required = @("Kuraiis-Playing-Setup-$version.exe", "Kuraiis-Playing-Setup-$version.exe.blockmap", 'latest.yml')
+          if ($LASTEXITCODE -eq 0 -and @($required | Where-Object { $_ -notin $assets }).Count -eq 0) {
             'publish=false' >> $env:GITHUB_OUTPUT
           } else {
             'publish=true' >> $env:GITHUB_OUTPUT
           }
           exit 0
-      - name: Build installer
-        if: steps.release.outputs.publish != 'true'
+      - name: Build installer and update metadata
         run: npm run dist
-      - name: Build and publish GitHub Release
+      - name: Publish complete GitHub Release
         if: steps.release.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run release
+        shell: pwsh
+        run: ./scripts/publish-release.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: Kuraiis-Playing-Windows
