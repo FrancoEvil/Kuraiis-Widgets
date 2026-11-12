@@ -27,7 +27,7 @@ nav button.active{background:linear-gradient(110deg,#FF4A7A20,#8B5CF618);color:#
 .text-editor-body{padding:18px 20px}.text-controls{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;row-gap:3px}.text-controls .field{min-width:0;min-height:43px}.text-controls select{max-width:165px}.text-quick{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:18px;border-top:1px solid #28293B;padding-top:16px}.text-quick p{margin:0;font-size:11px;color:var(--secondary)}.text-quick button{border-color:#6366F166;font-size:11px;flex-shrink:0}
 @media(max-width:1050px){.text-controls{column-gap:20px}.text-controls .range input{width:80px}.text-controls select{max-width:125px}}
 
-.window-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.sidebar-hidden #sidebar{display:none}.sidebar-hidden main{margin-left:0}#toggle-sidebar{border-color:#8B5CF655;color:#C4B5FD}@media(max-width:1050px){.window-actions{gap:6px}.window-actions button{padding:9px 10px;font-size:10px}}
+.window-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}#toggle-sidebar{border-color:#8B5CF655;color:#C4B5FD}@media(max-width:1050px){.window-actions{gap:6px}.window-actions button{padding:9px 10px;font-size:10px}}
 /* Sidebar controls stay available in compact mode. */
 #sidebar{padding:24px 14px;width:224px;display:flex;flex-direction:column;gap:0}
 .sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
@@ -61,3 +61,5 @@ nav button.active{background:linear-gradient(110deg,#FF4A7A20,#8B5CF618);color:#
 .album-swatches{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #28293B;font-size:10px;color:#94A3B8;min-height:38px}.album-swatch{display:inline-block;width:20px;height:20px;border:1px solid #ffffff33;border-radius:6px;flex-shrink:0}.album-panel .hint{margin-bottom:0}
 
 .update-panel h2{margin-top:0}.update-actions{display:flex;gap:10px;flex-wrap:wrap}.update-panel progress{width:100%;height:8px;accent-color:#FF4A7A;margin-bottom:16px}#update-status{font-size:12px;color:#CBD5E1;line-height:1.6}
+
+.tiktok-url{margin:16px 0}.tiktok-url code{overflow-wrap:anywhere;min-width:0}#tiktok-status{color:#C4B5FD;font-size:12px;line-height:1.6}button:disabled{opacity:.45;cursor:default}

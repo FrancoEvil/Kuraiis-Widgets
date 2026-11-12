@@ -8,3 +8,4 @@ playwright-report/
 .env.*
 !.env.example
 tests/fixtures/covers/los-tres.png
+graphify-out/

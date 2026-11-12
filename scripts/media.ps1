@@ -43,6 +43,7 @@ try {
      } finally {
       if ($buffer) { $buffer.Dispose() }
       if ($managed) { $managed.Dispose() }
+      if ($stream) { try { $stream.Dispose() } catch {} }
      }
     }
     @{title=$props.Title;artist=$props.Artist;album=$props.AlbumTitle;source=$session.SourceAppUserModelId;playing=$playing;position=($timeline.Position-$timeline.StartTime).TotalSeconds;sampledAt=$sampledAt;timelineUpdatedAt=$timelineUpdatedAt;playbackRate=$rate;duration=($timeline.EndTime-$timeline.StartTime).TotalSeconds;cover=$cover} | ConvertTo-Json -Compress

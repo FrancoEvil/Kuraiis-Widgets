@@ -3,7 +3,7 @@
 [![Windows build](https://github.com/FrancoEvil/Kuraiis-Playing/actions/workflows/windows.yml/badge.svg)](https://github.com/FrancoEvil/Kuraiis-Playing/actions/workflows/windows.yml)
 [![Descargar](https://img.shields.io/github/v/release/FrancoEvil/Kuraiis-Playing?label=descargar&color=FF4A7A)](https://github.com/FrancoEvil/Kuraiis-Playing/releases/latest)
 
-**Tu música, tu estilo, en tu stream.** Una aplicación de escritorio para Windows que transforma la canción del sistema en un widget personalizable para OBS.
+**Tu música, tu estilo, en tu stream.** Una aplicación de escritorio para Windows que transforma la canción del sistema en un widget personalizable para OBS y TikTok LIVE Studio.
 
 [Descargar para Windows](https://github.com/FrancoEvil/Kuraiis-Playing/releases/latest) · [Reportar un problema](https://github.com/FrancoEvil/Kuraiis-Playing/issues)
 
@@ -47,7 +47,24 @@ Disponible para **Windows 10/11 de 64 bits**. No necesitas instalar Node.js, .NE
 4. Configura un ancho de **1200** y un alto de **700**.
 5. Recorta el espacio sobrante manteniendo **Alt** mientras arrastras los bordes de la fuente.
 
-El widget tiene fondo transparente fuera del contenedor. Los cambios del editor llegan al widget sin recargar la fuente. Puedes copiar la URL desde **Conectar con OBS**.
+El widget tiene fondo transparente fuera del contenedor. Los cambios del editor llegan al widget sin recargar la fuente. Puedes copiar la URL desde **OBS y TikTok LIVE**.
+
+## TikTok LIVE Studio
+
+Si tu versión de LIVE Studio rechaza la URL local, usa el enlace HTTPS temporal:
+
+1. En Kuraii's Playing, abre **OBS y TikTok LIVE**.
+2. Pulsa **Crear enlace HTTPS**. La primera vez se descarga un componente oficial de Cloudflare (~55 MB), verificado por SHA-256 antes de ejecutarse.
+3. Espera a que la app valide la conexión y pulsa **Copiar enlace**.
+4. En LIVE Studio, añade una fuente **Enlace / Link** y pega la URL completa, incluida su ruta.
+5. Usa **1200 × 700** como tamaño de fuente y coloca el widget donde prefieras.
+6. Mantén Kuraii's Playing abierta o en la bandeja. Para revocar el enlace, pulsa **Desconectar**.
+
+Los colores automáticos, las fuentes, los bordes, el progreso y la transparencia funcionan en esta salida. La app consulta snapshots en lugar de SSE para ser compatible con los túneles temporales.
+
+**El enlace es público para quien lo tenga.** Solo expone el widget y los datos de la canción; no expone el editor, tus preferencias de inicio o los controles de actualización. No publiques la URL si quieres mantenerla privada. La conexión pasa por Cloudflare y requiere internet. No se inicia automáticamente ni requiere una cuenta de Cloudflare.
+
+La URL cambia al volver a conectar. Los [Quick Tunnels de Cloudflare](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/) son un servicio temporal sin disponibilidad garantizada. Si tu red los bloquea, o tu cuenta de LIVE Studio no dispone de fuente Enlace, puedes montar la escena en OBS y seleccionar **OBS Virtual Camera** como cámara en LIVE Studio, si tu cuenta la permite. Consulta la [guía oficial de cámara virtual de OBS](https://obsproject.com/kb/virtual-camera-guide).
 
 ## Reproducción y carátulas
 
@@ -99,9 +116,10 @@ Las actualizaciones usan versiones publicadas en **GitHub Releases**, no los arc
 ## Datos y privacidad
 
 - La lectura de la carátula y la extracción de colores se realizan localmente.
-- El widget escucha únicamente en `127.0.0.1`; no se expone a tu red local.
+- El widget de OBS escucha únicamente en `127.0.0.1`. El enlace HTTPS opcional para TikTok comparte solo el widget a través de Cloudflare.
 - No hay cuentas ni telemetría añadida por la aplicación.
 - Las búsquedas y descargas de actualizaciones se conectan a GitHub.
+- Al crear un enlace para TikTok, la app descarga el componente de Cloudflare desde su repositorio oficial de GitHub y comparte la salida visual a través de Cloudflare. Al desconectarlo se cierra el túnel.
 - Los ajustes se conservan en `%APPDATA%/NowPlaying Studio/settings.json`. Se mantiene el nombre de carpeta anterior para conservar los perfiles de las primeras versiones.
 
 ## Desarrollo
@@ -146,3 +164,5 @@ No hace falta reenviar los ejecutables a los usuarios. Cada actualización publi
 Incluye las fuentes de sistema Segoe UI, Arial, Georgia y Consolas, y 13 familias empaquetadas: Arimo, Bebas Neue, Bubblegum Sans, Comic Relief, DynaPuff, Fredoka, Lora, Montserrat, Playfair Display, Poppins, Roboto, Shrikhand y Sniglet.
 
 Las fuentes empaquetadas conservan sus licencias OFL y el manifiesto de procedencia en [`ui/fonts`](ui/fonts).
+
+El componente opcional cloudflared conserva su licencia Apache-2.0 y su versión/hash fijados en [`assets/cloudflared`](assets/cloudflared). El ejecutable se descarga únicamente al crear el primer enlace HTTPS.
