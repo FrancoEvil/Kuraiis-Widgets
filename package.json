@@ -1,6 +1,6 @@
 {
   "name": "kuraiis-widgets",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Kuraii's Widgets · Música y chat de TikTok LIVE para OBS y LIVE Studio",
   "main": "src/main.js",
   "scripts": {

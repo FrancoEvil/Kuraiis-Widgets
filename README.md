@@ -30,6 +30,7 @@ http://127.0.0.1:17834/chat?mock=true
 
 El modo mock genera ejemplos en el navegador y no conecta a un directo. Puedes diseñar nombres, mensajes, fuente, tamaño y fondos por mensaje. El documento del overlay es completamente transparente.
 
+- **Fotos de perfil:** muestra el avatar de TikTok en mensajes y regalos. Puedes desactivarlo desde Diseño del chat → Mostrar fotos de perfil; si no hay foto o no carga, se usan las iniciales. Las imágenes se cargan desde los CDN de TikTok sin enviar el enlace privado del overlay como referencia.
 - Anti-spam con deduplicación por usuario durante 30 segundos, límite de emojis y separación mínima entre mensajes.
 - Regalos: las rachas se muestran una sola vez con su cantidad final.
 - Máximo de mensajes visibles entre 1 y 80; tiempo de desvanecimiento entre 0 y 300 segundos. Tiempo 0 desactiva el fade-out, no el límite del DOM.

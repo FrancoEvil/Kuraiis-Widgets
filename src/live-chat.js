@@ -1,10 +1,10 @@
-const {visualSettings}=require('../ui/chat-settings');const crypto=require('node:crypto');
+const {visualSettings}=require('../ui/chat-settings');const avatar=require('../ui/chat-avatar');const crypto=require('node:crypto');
 const clean=(value,max)=>Array.from(String(value??'').replace(/[\u0000-\u0008\u000b-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g,'')).slice(0,max).join('');
 const segmenter=new Intl.Segmenter('es',{granularity:'grapheme'});const emojiPattern=/\p{Extended_Pictographic}|\p{Regional_Indicator}{2}|[0-9#*]\ufe0f?\u20e3/u;
 const username=value=>{const text=String(value||'').trim().replace(/^@/,'');if(!/^[A-Za-z0-9_.]{1,32}$/.test(text))throw Error('Escribe el usuario de TikTok sin la URL del directo.');return text;};
 function normalizeEvent(data){
  const user=data.user||data,first=values=>values.find(v=>v!==undefined&&v!==null&&String(v)!==''&&String(v)!=='0');
- return {msgId:first([data.msgId,data.common?.msgId])||'',user:{userId:first([user.userId,user.idStr,user.id,user.uniqueId,user.displayId])||user.nickname||'',nickname:user.nickname||user.nickName||user.uniqueId||user.displayId||'Anónimo'},comment:typeof data.comment==='string'?data.comment:typeof data.content==='string'?data.content:'',giftDetails:{giftType:data.giftDetails?.giftType??data.giftType??(data.gift?.combo?1:data.gift?.type??0),giftName:data.giftDetails?.giftName||data.gift?.name||data.extendedGiftInfo?.name||data.giftName||'Regalo'},repeatCount:data.repeatCount,repeatEnd:data.repeatEnd===true||Number(data.repeatEnd)===1};
+ return {msgId:first([data.msgId,data.common?.msgId])||'',user:{userId:first([user.userId,user.idStr,user.id,user.uniqueId,user.displayId])||user.nickname||'',nickname:user.nickname||user.nickName||user.uniqueId||user.displayId||'Anónimo',avatarUrl:avatar.fromUser(user)},comment:typeof data.comment==='string'?data.comment:typeof data.content==='string'?data.content:'',giftDetails:{giftType:data.giftDetails?.giftType??data.giftType??(data.gift?.combo?1:data.gift?.type??0),giftName:data.giftDetails?.giftName||data.gift?.name||data.extendedGiftInfo?.name||data.giftName||'Regalo'},repeatCount:data.repeatCount,repeatEnd:data.repeatEnd===true||Number(data.repeatEnd)===1};
 }
 class SpamFilter{
  constructor(){this.seen=new Map();this.users=new Map();this.tokens=60;this.at=Date.now();}
@@ -40,7 +40,7 @@ function createChat({getSettings,onChange=()=>{},factory=createConnector}){
   data=normalizeEvent(data);const settings=getSettings();if(type==='gift'&&(!settings.chatShowGifts||(Number(data.giftDetails?.giftType??data.giftType)===1&&!data.repeatEnd)))return;
   if(!filter.accept(type,data,settings)){state.blocked++;return;}
   const user=data.user||data,nickname=clean(user.nickname||user.nickName||user.uniqueId||'Anónimo',64);
-  const event={id:epoch+':'+(++counter),type,nickname,createdAt:Date.now()};
+  const event={id:epoch+':'+(++counter),type,nickname,avatarUrl:user.avatarUrl||'',createdAt:Date.now()};
   if(type==='chat')event.comment=clean(data.comment,320);else{event.giftName=clean(data.giftDetails?.giftName||data.extendedGiftInfo?.name||data.giftName||'Regalo',80);event.count=Math.max(1,Math.min(9999,Number(data.repeatCount)||1));}
   events.push(event);while(events.length>200)events.shift();state.accepted++;emit('chat:message',event);return event;
  }

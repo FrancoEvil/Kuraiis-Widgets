@@ -24,3 +24,20 @@ test('adapta el esquema real de TikTok: content, user.id y gift con repeatEnd nu
 test('la clave opcional no queda en el singleton del conector',async()=>{
  const {createConnector}=require('../src/live-chat');const c=await createConnector('kuraii_test','unit-test-key');try{const sdk=await import('tiktok-live-connector');expect(sdk.SignConfig.apiKey).toBeUndefined();expect(sdk.SignConfig.cachedInstance).toBeUndefined();}finally{await c.disconnect();}
 });
+
+test('fotos de perfil: esquemas de TikTok, URLs seguras, carga, alternativa y ocultación en HTTPS',async()=>{
+ const avatar=require('../ui/chat-avatar');const {normalizeEvent}=require('../src/live-chat');const photo='https://p16-sign.tiktokcdn-us.com/avatar.jpeg?signature=test';
+ expect(normalizeEvent({user:{avatarThumb:{urlList:[photo]}}}).user.avatarUrl).toBe(photo);
+ expect(normalizeEvent({nickname:'Legacy',profilePictureUrl:photo}).user.avatarUrl).toBe(photo);
+ for(const bad of ['javascript:alert(1)','http://p16.tiktokcdn.com/a','https://tiktokcdn.com.evil.example/a','https://user:pass@p16.tiktokcdn.com/a','https://127.0.0.1/a','data:image/svg+xml,test'])expect(avatar.url(bad)).toBe('');
+ const x=await setup({chatCooldown:0});let app,overlay;try{
+  overlay=await createPublicOverlay(()=>({settings:defaults,media:{cover:''}}),{chatHub:x.hub});app=await electron.launch({args:[path.resolve('tests/fixtures/layout-main.cjs')]});const page=await app.firstWindow();
+  await page.route('https://p16-sign.tiktokcdn-us.com/**',route=>route.request().url().includes('broken')?route.abort():route.fulfill({contentType:'image/png',body:fs.readFileSync(path.resolve('assets/app.png'))}));
+  await page.goto(overlay.origin+overlay.prefix+'chat');await expect(page.locator('#connection-text')).toHaveText('Sin conexión a un directo.');
+  x.hub.ingest('chat',{user:{id:'1',nickname:'Mika',avatarThumb:{urlList:[photo]}},content:'Foto disponible'});
+  const image=page.locator('.chat-avatar img');await expect(image).toBeVisible();expect(await image.evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);await expect(image).toHaveAttribute('referrerpolicy','no-referrer');
+  x.set({chatShowAvatars:false});await expect(image).toHaveCount(0);await expect(page.locator('.chat-avatar')).toHaveText('M');x.set({chatShowAvatars:true});await expect(image).toBeVisible();
+  x.hub.ingest('gift',{user:{id:'2',nickname:'Luna',avatarLarge:{urlList:['https://p16-sign.tiktokcdn-us.com/broken.jpeg']}},gift:{name:'Rosa'},repeatEnd:1});
+  await expect(page.locator('.chat-avatar').last()).toHaveText('L');await expect(page.locator('.chat-avatar').last().locator('img')).toHaveCount(0);await expect(page.locator('.gift-label')).toHaveText('REGALO');
+ }finally{if(app)await app.close();overlay?.close();await x.close();}
+});

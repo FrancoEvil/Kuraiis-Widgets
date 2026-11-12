@@ -1,4 +1,5 @@
 const http=require('node:http');const fs=require('node:fs');const path=require('node:path');const crypto=require('node:crypto');const widgetAsset=require('./widget-assets');const {defaults}=require('./settings');
+const avatar=require('../ui/chat-avatar');
 const privateKeys=new Set(['autoUpdate','startup','startHidden','minimizeTray','sidebarHidden','schemaVersion']);
 const visualKeys=Object.keys(defaults).filter(k=>!privateKeys.has(k)&&!k.startsWith('chat'));
 function publicSnapshot(state,cover){
@@ -16,7 +17,7 @@ async function createPublicOverlay(getState,{chatHub}={}){
    if(relative==='snapshot.json'){const cover=image();res.setHeader('Content-Type','application/json');return res.end(JSON.stringify(publicSnapshot(getState(),cover.bytes?'./cover/'+cover.hash:'')));}
    if(relative.startsWith('cover/')){const cover=image();if(!cover.bytes||relative!=='cover/'+cover.hash){res.writeHead(404);return res.end();}res.setHeader('Content-Type',cover.mime);return res.end(cover.bytes);}
    const asset=widgetAsset('/'+relative);if(!asset){res.writeHead(404);return res.end();}
-   res.setHeader('Content-Type',asset.type);res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' wss:; base-uri 'none'; form-action 'none'");
+   res.setHeader('Content-Type',asset.type);res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: "+avatar.csp+"; font-src 'self'; connect-src 'self' wss:; base-uri 'none'; form-action 'none'");
    res.end(await fs.promises.readFile(path.join(__dirname,'../ui',asset.file)));
   }catch{res.writeHead(500);res.end();}
  });

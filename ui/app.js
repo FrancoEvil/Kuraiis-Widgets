@@ -112,7 +112,7 @@ $('copy-tiktok').onclick=()=>api.copyTikTok().then(()=>notice('Enlace HTTPS copi
 field('chat-design-controls','chatFont','Tipografía','select',{options:FONT_CATALOG.map(f=>[f.name,f.name])});
 for(const [key,label]of [['chatAccent','Nombres y acento'],['chatText','Color del mensaje'],['chatBubble','Fondo por mensaje']])field('chat-design-controls',key,label,'color');
 for(const [key,label,min,max]of [['chatFontSize','Tamaño de letra',12,40],['chatBubbleOpacity','Opacidad por mensaje (%)',0,100],['chatMaxMessages','Máximo de mensajes visibles',1,80],['chatFadeSeconds','Desvanecer después de (s)',0,300]])field('chat-design-controls',key,label,'range',{min,max});
-field('chat-design-controls','chatShowStatus','Mostrar estado de conexión','checkbox');field('chat-design-controls','chatShowGifts','Mostrar regalos','checkbox');
+field('chat-design-controls','chatShowStatus','Mostrar estado de conexión','checkbox');field('chat-design-controls','chatShowAvatars','Mostrar fotos de perfil','checkbox');field('chat-design-controls','chatShowGifts','Mostrar regalos','checkbox');
 field('chat-filter-controls','chatAntiSpam','Filtro anti-spam','checkbox');field('chat-filter-controls','chatMaxEmojis','Máximo de emojis por mensaje','range',{min:0,max:40});field('chat-filter-controls','chatCooldown','Intervalo por usuario (ms)','range',{min:0,max:10000,step:100});field('chat-filter-controls','chatReconnect','Reconectar si se interrumpe','checkbox');
 function updateChat(){
  if(!state)return;const view=activePage==='chat',c=state.chat||{status:'disconnected',message:'Sin conexión a un directo.',accepted:0,blocked:0};
