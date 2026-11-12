@@ -1,7 +1,7 @@
 {
-  "name": "kuraiis-playing",
-  "version": "1.5.0",
-  "description": "Kuraii's Playing · Widget personalizable para OBS y TikTok LIVE Studio",
+  "name": "kuraiis-widgets",
+  "version": "1.6.0",
+  "description": "Kuraii's Widgets · Música y chat de TikTok LIVE para OBS y LIVE Studio",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -18,7 +18,7 @@
     "electron": "^45.3.0",
     "electron-builder": "^26.18.0"
   },
-  "productName": "Kuraii's Playing",
+  "productName": "Kuraii's Widgets",
   "build": {
     "appId": "studio.nowplaying.desktop",
     "asar": true,
@@ -27,7 +27,8 @@
       "ui/**/*",
       "scripts/media.ps1",
       "package.json",
-      "assets/**/*"
+      "assets/**/*",
+      "THIRD_PARTY_NOTICES.md"
     ],
     "asarUnpack": [
       "scripts/media.ps1"
@@ -46,27 +47,30 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "artifactName": "Kuraiis-Playing-Setup-${version}.${ext}"
+      "artifactName": "Kuraiis-Widgets-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Kuraiis-Playing-Portable-${version}.${ext}"
+      "artifactName": "Kuraiis-Widgets-Portable-${version}.${ext}"
     },
     "compression": "normal",
     "publish": [
       {
         "provider": "github",
         "owner": "FrancoEvil",
-        "repo": "Kuraiis-Playing",
+        "repo": "Kuraiis-Widgets",
         "releaseType": "release"
       }
     ]
   },
   "dependencies": {
-    "electron-updater": "^6.8.11"
+    "electron-updater": "^6.8.11",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
+    "tiktok-live-connector": "^2.5.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/FrancoEvil/Kuraiis-Playing.git"
+    "url": "https://github.com/FrancoEvil/Kuraiis-Widgets.git"
   },
-  "homepage": "https://github.com/FrancoEvil/Kuraiis-Playing"
+  "homepage": "https://github.com/FrancoEvil/Kuraiis-Widgets"
 }

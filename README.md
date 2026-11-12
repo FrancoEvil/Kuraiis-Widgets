@@ -1,13 +1,47 @@
-# Kuraii's Playing
+# Kuraii's Widgets
 
-[![Windows build](https://github.com/FrancoEvil/Kuraiis-Playing/actions/workflows/windows.yml/badge.svg)](https://github.com/FrancoEvil/Kuraiis-Playing/actions/workflows/windows.yml)
-[![Descargar](https://img.shields.io/github/v/release/FrancoEvil/Kuraiis-Playing?label=descargar&color=FF4A7A)](https://github.com/FrancoEvil/Kuraiis-Playing/releases/latest)
+[![Windows build](https://github.com/FrancoEvil/Kuraiis-Widgets/actions/workflows/windows.yml/badge.svg)](https://github.com/FrancoEvil/Kuraiis-Widgets/actions/workflows/windows.yml)
+[![Descargar](https://img.shields.io/github/v/release/FrancoEvil/Kuraiis-Widgets?label=descargar&color=FF4A7A)](https://github.com/FrancoEvil/Kuraiis-Widgets/releases/latest)
 
-**Tu música, tu estilo, en tu stream.** Una aplicación de escritorio para Windows que transforma la canción del sistema en un widget personalizable para OBS y TikTok LIVE Studio.
+**Música y comunidad con tu estilo.** Una aplicación de escritorio para Windows con widgets personalizables de NowPlaying y chat de TikTok LIVE para OBS y TikTok LIVE Studio.
 
-[Descargar para Windows](https://github.com/FrancoEvil/Kuraiis-Playing/releases/latest) · [Reportar un problema](https://github.com/FrancoEvil/Kuraiis-Playing/issues)
+[Descargar para Windows](https://github.com/FrancoEvil/Kuraiis-Widgets/releases/latest) · [Reportar un problema](https://github.com/FrancoEvil/Kuraiis-Widgets/issues)
 
-![Panel de Kuraii's Playing](docs/interface.png)
+![Panel de Kuraii's Widgets](docs/interface.png)
+
+## Chat de TikTok LIVE
+
+![Panel de chat](docs/chat.png)
+
+1. Abre **Chat LIVE** e introduce el @usuario del creador que está en directo.
+2. Si el servicio de firma requiere una clave de Euler Stream, introdúcela en el campo opcional. No se guarda en el perfil ni se incluye en el overlay. No introduzcas cookies ni tu contraseña de TikTok.
+3. Pulsa **Conectar**. Verás el estado, los mensajes aceptados y los filtrados.
+4. Copia la URL del chat a una fuente Navegador de OBS de **480 × 700**:
+
+   ```text
+   http://127.0.0.1:17834/chat
+   ```
+
+Para probarlo sin estar en vivo, activa **Chat de prueba** en la vista previa o usa:
+
+```text
+http://127.0.0.1:17834/chat?mock=true
+```
+
+El modo mock genera ejemplos en el navegador y no conecta a un directo. Puedes diseñar nombres, mensajes, fuente, tamaño y fondos por mensaje. El documento del overlay es completamente transparente.
+
+- Anti-spam con deduplicación por usuario durante 30 segundos, límite de emojis y separación mínima entre mensajes.
+- Regalos: las rachas se muestran una sola vez con su cantidad final.
+- Máximo de mensajes visibles entre 1 y 80; tiempo de desvanecimiento entre 0 y 300 segundos. Tiempo 0 desactiva el fade-out, no el límite del DOM.
+- Historial de servidor limitado a 200 eventos, cola de renderizado limitada a 200 y caché de identificadores de cliente limitada a 512.
+- Todo nickname, mensaje y nombre de regalo se inserta con `textContent`, sin interpretar HTML.
+- Una única conexión al directo distribuye los eventos a las fuentes mediante Socket.IO. No hay controles de conexión expuestos desde el overlay público.
+
+Para LIVE Studio, crea el enlace HTTPS opcional y pulsa **Copiar chat HTTPS**. La fuente utiliza su ruta Socket.IO protegida por el secreto del enlace; los espectadores con esa URL podrán leer el chat.
+
+El conector es **no oficial** y depende de TikTok y del servicio de firma de terceros. La lectura real puede quedar limitada por esos servicios o requerir una clave propia. Las pruebas automáticas usan mensajes simulados; no equivalen a comprobar una cuenta en directo.
+
+El catálogo ampliado de regalos no se consulta al conectar; los nombres de regalo se obtienen de los eventos disponibles.
 
 ## Qué puedes personalizar
 
@@ -27,16 +61,16 @@ La barra de progreso avanza de forma continua entre las actualizaciones del repr
 
 ## Instalación
 
-1. Abre la [última versión publicada](https://github.com/FrancoEvil/Kuraiis-Playing/releases/latest).
-2. Descarga **Kuraiis-Playing-Setup-X.Y.Z.exe**. Los archivos `.blockmap` y `latest.yml` son para el actualizador.
+1. Abre la [última versión publicada](https://github.com/FrancoEvil/Kuraiis-Widgets/releases/latest).
+2. Descarga **Kuraiis-Widgets-Setup-X.Y.Z.exe**. Los archivos `.blockmap` y `latest.yml` son para el actualizador.
 3. Si ya tienes la app abierta, elige **Salir** desde su icono en la bandeja.
-4. Ejecuta el instalador y abre **Kuraii's Playing**.
+4. Ejecuta el instalador y abre **Kuraii's Widgets**.
 
 Disponible para **Windows 10/11 de 64 bits**. No necesitas instalar Node.js, .NET ni las fuentes para utilizar la aplicación. El instalador todavía no tiene firma digital.
 
 ## Conectar con OBS
 
-1. Deja Kuraii's Playing abierta o minimizada en la bandeja.
+1. Deja Kuraii's Widgets abierta o minimizada en la bandeja.
 2. En OBS, entra en **Fuentes → + → Navegador**.
 3. Usa esta URL:
 
@@ -53,12 +87,12 @@ El widget tiene fondo transparente fuera del contenedor. Los cambios del editor 
 
 Si tu versión de LIVE Studio rechaza la URL local, usa el enlace HTTPS temporal:
 
-1. En Kuraii's Playing, abre **OBS y TikTok LIVE**.
+1. En Kuraii's Widgets, abre **OBS y TikTok LIVE**.
 2. Pulsa **Crear enlace HTTPS**. La primera vez se descarga un componente oficial de Cloudflare (~55 MB), verificado por SHA-256 antes de ejecutarse.
 3. Espera a que la app valide la conexión y pulsa **Copiar enlace**.
 4. En LIVE Studio, añade una fuente **Enlace / Link** y pega la URL completa, incluida su ruta.
 5. Usa **1200 × 700** como tamaño de fuente y coloca el widget donde prefieras.
-6. Mantén Kuraii's Playing abierta o en la bandeja. Para revocar el enlace, pulsa **Desconectar**.
+6. Mantén Kuraii's Widgets abierta o en la bandeja. Para revocar el enlace, pulsa **Desconectar**.
 
 Los colores automáticos, las fuentes, los bordes, el progreso y la transparencia funcionan en esta salida. La app consulta snapshots en lugar de SSE para ser compatible con los túneles temporales.
 
@@ -116,8 +150,8 @@ Las actualizaciones usan versiones publicadas en **GitHub Releases**, no los arc
 ## Datos y privacidad
 
 - La lectura de la carátula y la extracción de colores se realizan localmente.
-- El widget de OBS escucha únicamente en `127.0.0.1`. El enlace HTTPS opcional para TikTok comparte solo el widget a través de Cloudflare.
-- No hay cuentas ni telemetría añadida por la aplicación.
+- Los widgets de OBS escuchan únicamente en `127.0.0.1`. El enlace HTTPS opcional para TikTok comparte solo el widget a través de Cloudflare.
+- No hay cuentas ni telemetría añadida por la aplicación. La conexión manual al chat usa TikTok y el servicio de firma empleado por el conector; la clave opcional se mantiene solo en memoria.
 - Las búsquedas y descargas de actualizaciones se conectan a GitHub.
 - Al crear un enlace para TikTok, la app descarga el componente de Cloudflare desde su repositorio oficial de GitHub y comparte la salida visual a través de Cloudflare. Al desconectarlo se cierra el túnel.
 - Los ajustes se conservan en `%APPDATA%/NowPlaying Studio/settings.json`. Se mantiene el nombre de carpeta anterior para conservar los perfiles de las primeras versiones.
@@ -166,3 +200,13 @@ Incluye las fuentes de sistema Segoe UI, Arial, Georgia y Consolas, y 13 familia
 Las fuentes empaquetadas conservan sus licencias OFL y el manifiesto de procedencia en [`ui/fonts`](ui/fonts).
 
 El componente opcional cloudflared conserva su licencia Apache-2.0 y su versión/hash fijados en [`assets/cloudflared`](assets/cloudflared). El ejecutable se descarga únicamente al crear el primer enlace HTTPS.
+
+## Cambio de nombre
+
+Kuraii's Widgets es la continuación de Kuraii's Playing. Se conservan el appId de Windows y la carpeta de configuración anterior para mantener tus ajustes y la continuidad del actualizador. El repositorio anterior redirige al nuevo.
+
+El plan técnico del módulo de chat está en [Plan.md](Plan.md).
+
+## Componentes de terceros
+
+El conector TikTok LIVE se distribuye bajo AGPL-3.0-only. Las licencias y referencias de los componentes incluidos están en [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). El código de la aplicación y de su integración está disponible en este repositorio público.

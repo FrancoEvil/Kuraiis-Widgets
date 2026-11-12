@@ -32,7 +32,7 @@ jobs:
         run: |
           $version = node -p "require('./package.json').version"
           $assets = gh release view "v$version" --repo '${{ github.repository }}' --json assets --jq '.assets[].name' 2>$null
-          $required = @("Kuraiis-Playing-Setup-$version.exe", "Kuraiis-Playing-Setup-$version.exe.blockmap", 'latest.yml')
+          $required = @("Kuraiis-Widgets-Setup-$version.exe", "Kuraiis-Widgets-Setup-$version.exe.blockmap", 'latest.yml')
           if ($LASTEXITCODE -eq 0 -and @($required | Where-Object { $_ -notin $assets }).Count -eq 0) {
             'publish=false' >> $env:GITHUB_OUTPUT
           } else {
@@ -49,7 +49,7 @@ jobs:
         run: ./scripts/publish-release.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: Kuraiis-Playing-Windows
+          name: Kuraiis-Widgets-Windows
           path: |
             dist/*.exe
             dist/*.blockmap

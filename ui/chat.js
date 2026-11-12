@@ -1,0 +1,29 @@
+(() => {
+ const $=id=>document.getElementById(id),mock=new URLSearchParams(location.search).get('mock')==='true';
+ let config={...defaults},pending=[],records=[],seen=new Set(),epoch='',scheduled=false,mockTimer,cleanup;
+ const safe=(value,max)=>Array.from(String(value??'')).slice(0,max).join('');
+ function status(state){const kind=mock?'mock':state.status;$('connection').dataset.status=kind;$('connection-text').textContent=mock?'MODO MOCK · VISTA PREVIA':state.message||'Sin conexión a un directo.';}
+ function configure(input){config={...config,...input};const root=$('chat-overlay');root.style.fontFamily=config.chatFont;root.style.fontSize=Math.min(40,Math.max(12,Number(config.chatFontSize)||20))+'px';root.style.color=/^#[0-9a-f]{6}$/i.test(config.chatText)?config.chatText:'#f8fafc';root.style.setProperty('--accent',/^#[0-9a-f]{6}$/i.test(config.chatAccent)?config.chatAccent:'#ff4a7a');const rgb=[1,3,5].map(i=>parseInt((/^#[0-9a-f]{6}$/i.test(config.chatBubble)?config.chatBubble:'#13141f').slice(i,i+2),16));root.style.setProperty('--bubble','rgba('+rgb.join(',')+','+Math.min(1,Math.max(0,Number(config.chatBubbleOpacity)/100))+')');$('connection').hidden=!config.chatShowStatus;trim();}
+ function trim(){const max=Math.min(80,Math.max(1,Number(config.chatMaxMessages)||24));while(records.length>max)records.shift().node.remove();}
+ function reset(next=''){epoch=next;pending=[];records=[];seen.clear();$('messages').replaceChildren();}
+ function enqueue(event){if(!event||!['chat','gift'].includes(event.type)||seen.has(event.id))return;if(event.type==='gift'&&!config.chatShowGifts)return;seen.add(event.id);while(seen.size>512)seen.delete(seen.values().next().value);pending.push(event);if(pending.length>200)pending.splice(0,pending.length-200);if(!scheduled){scheduled=true;requestAnimationFrame(flush);}}
+ function flush(){scheduled=false;const fragment=document.createDocumentFragment();for(const event of pending.splice(0,4)){
+  const age=Date.now()-Number(event.createdAt||Date.now());if(config.chatFadeSeconds>0&&age>config.chatFadeSeconds*1000)continue;
+  const node=document.createElement('article');node.className='chat-message'+(event.type==='gift'?' gift':'');node.dataset.messageId=safe(event.id,100);
+  const avatar=document.createElement('span');avatar.className='chat-avatar';avatar.setAttribute('aria-hidden','true');avatar.textContent=event.type==='gift'?'🎁':Array.from(safe(event.nickname,64))[0]||'?';
+  const copy=document.createElement('div');copy.className='chat-copy';const name=document.createElement('strong');name.className='chat-nickname';name.textContent=safe(event.nickname,64);
+  const comment=document.createElement('span');comment.className='chat-comment';comment.textContent=event.type==='gift'?safe(event.giftName,80)+' × '+Math.min(9999,Math.max(1,Number(event.count)||1)):safe(event.comment,320);copy.append(name,comment);
+  if(event.type==='gift'){const tag=document.createElement('span');tag.className='gift-label';tag.textContent='REGALO';copy.append(tag);}
+  node.append(avatar,copy);fragment.append(node);records.push({node,createdAt:Number(event.createdAt)||Date.now(),fadingAt:0});
+ }$('messages').append(fragment);trim();if(pending.length){scheduled=true;requestAnimationFrame(flush);}}
+ cleanup=setInterval(()=>{const now=Date.now();for(const item of [...records]){if(item.fadingAt&&now-item.fadingAt>=400){item.node.remove();records.splice(records.indexOf(item),1);}else if(config.chatFadeSeconds>0&&now-item.createdAt>=config.chatFadeSeconds*1000&&!item.fadingAt){item.fadingAt=now;item.node.classList.add('leaving');}}},250);
+ const examples=[['Luna','Se ve increíble el widget 💜'],['Alex','¡Hola chat! ¿Cómo están?'],['Mika','Esta canción es buenísima 🎶'],['Kuraii','Gracias por acompañarme ✨']];let mockIndex=0;
+ function mockMessage(){const sample=examples[mockIndex%examples.length],gift=mockIndex%5===4;enqueue({id:'mock:'+mockIndex++,type:gift?'gift':'chat',nickname:sample[0],comment:sample[1],giftName:'Rosa',count:5,createdAt:Date.now()});}
+ configure(config);status({status:'disconnected',message:'Conectando con Kuraii\'s Widgets…'});
+ if(mock){for(let i=0;i<3;i++)mockMessage();mockTimer=setInterval(mockMessage,1400);}
+ const base=new URL('.',location.href).pathname;
+ const socket=io(location.origin,{path:base+'chat-socket',auth:{mock},transports:['websocket','polling'],reconnection:true,reconnectionDelay:1000,reconnectionDelayMax:10000});
+ socket.on('chat:initial',data=>{configure(data.settings);status(data.state);if(!mock){if(epoch!==data.epoch)reset(data.epoch);for(const event of data.events||[])enqueue(event);}});
+ socket.on('chat:config',configure);socket.on('chat:state',status);socket.on('chat:message',event=>{if(!mock)enqueue(event);});socket.on('chat:reset',data=>{if(!mock)reset(data.epoch);});socket.on('disconnect',()=>status({status:'disconnected',message:'Reconectando con la app…'}));socket.on('connect_error',()=>status({status:'error',message:'No se pudo conectar con la app.'}));
+ window.addEventListener('pagehide',()=>{clearInterval(mockTimer);clearInterval(cleanup);socket.disconnect();pending=[];records=[];seen.clear();});
+})();

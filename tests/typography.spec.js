@@ -1,8 +1,8 @@
 const {test,expect,_electron:electron}=require('@playwright/test');const {defaults,validate,migrateLegacy}=require('../src/settings');
-test("contornos y estilos independientes, menú plegable y paleta Kuraii's Playing",async()=>{
+test("contornos y estilos independientes, menú plegable y paleta Kuraii's Widgets",async()=>{
  const app=await electron.launch({args:[require('node:path').resolve('tests/fixtures/layout-main.cjs')]});
  try{const page=await app.firstWindow();await page.waitForSelector('#toggle-sidebar');
- await expect(page).toHaveTitle("Kuraii's Playing");expect(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(9, 10, 16)');
+ await expect(page).toHaveTitle("Kuraii's Widgets");expect(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(9, 10, 16)');
  const before=await page.locator('main').boundingBox();await page.locator('#toggle-sidebar').click();await expect(page.locator('#sidebar')).toHaveCSS('width','64px');await expect(page.locator('.nav-label').first()).toBeHidden();await expect(page.locator('#toggle-sidebar')).toHaveAttribute('aria-expanded','false');expect((await page.locator('main').boundingBox()).width).toBeGreaterThan(before.width);await page.locator('#toggle-sidebar').click();await expect(page.locator('#sidebar')).toBeVisible();
  await page.locator('[data-page="typography"]').click();await page.getByRole('button',{name:'Aplicar blanco con borde negro a título de la canción',exact:true}).click();
  const frame=page.frameLocator('#preview');await expect(frame.locator('#title')).toHaveCSS('color','rgb(255, 255, 255)');await expect(frame.locator('#title')).toHaveCSS('-webkit-text-stroke-width','3px');await expect(frame.locator('#title')).toHaveCSS('-webkit-text-stroke-color','rgb(0, 0, 0)');await expect(frame.locator('#title')).toHaveCSS('paint-order','stroke');await expect(frame.locator('#artist')).toHaveCSS('-webkit-text-stroke-width','0px');
