@@ -4,7 +4,7 @@ async function probePublicURL(url){try{const response=await fetch(new URL('snaps
 function createTikTok({getAppState,directory,onChange,createOverlay=createPublicOverlay,ensureClient=ensureTunnelClient,spawnClient=spawn,probe=probePublicURL,probeDelay=12000,onLog=()=>{}}){
  let state={status:'stopped',url:'',chatUrl:'',message:'Crea un enlace HTTPS temporal para LIVE Studio.',percent:0};let controller,child,overlay,timeout,probeTimer,generation=0;
  const set=patch=>{state={...state,...patch};onChange?.();};
- async function stop(){generation++;clearTimeout(timeout);clearTimeout(probeTimer);controller?.abort();controller=null;const old=child;child=null;old?.kill();overlay?.close();overlay=null;set({status:'stopped',url:'',percent:0,message:'Enlace desconectado. La URL anterior ya no está disponible.'});return state;}
+ async function stop(){generation++;clearTimeout(timeout);clearTimeout(probeTimer);controller?.abort();controller=null;const old=child;child=null;old?.kill();overlay?.close();overlay=null;set({status:'stopped',url:'',chatUrl:'',percent:0,message:'Enlace desconectado. La URL anterior ya no está disponible.'});return state;}
  async function start(){
   if(['downloading','connecting','active'].includes(state.status))return state;
   const request=++generation;controller=new AbortController();set({status:'downloading',url:'',chatUrl:'',percent:0,message:'Preparando el componente de conexión de Cloudflare…'});
@@ -27,7 +27,7 @@ function createTikTok({getAppState,directory,onChange,createOverlay=createPublic
    proc.on('error',()=>failed('No se pudo iniciar el componente de conexión.'));
    proc.on('exit',()=>failed('La conexión se cerró. Pulsa Crear enlace para volver a conectar.'));
    timeout=setTimeout(()=>failed('No se pudo conectar con Cloudflare. Comprueba tu conexión y vuelve a intentarlo.'),120000);timeout.unref?.();
-  }catch(error){if(request===generation){overlay?.close();overlay=null;set({status:'error',url:'',message:error.message||'No se pudo crear el enlace HTTPS.'});}}
+  }catch(error){if(request===generation){overlay?.close();overlay=null;set({status:'error',url:'',chatUrl:'',message:error.message||'No se pudo crear el enlace HTTPS.'});}}
   return state;
  }
  return {getState:()=>({...state}),start,stop};
