@@ -16,6 +16,7 @@ function validate(input){
  const out={...defaults};for(const k of Object.keys(out)){const v=input?.[k];if(typeof out[k]==='boolean'&&typeof v==='boolean')out[k]=v;if(typeof out[k]==='string'&&typeof v==='string'&&v.length<100)out[k]=v;}
  for(const [k,min,max]of ranges)if(Number.isFinite(input?.[k]))out[k]=Math.max(min,Math.min(max,input[k]));
  for(const k of colorKeys)if(!/^#[0-9a-f]{6}$/i.test(out[k]))out[k]=defaults[k];
+ if(!['auto','circle','rounded','square'].includes(out.chatAvatarShape))out.chatAvatarShape='auto';
  if(!require('../ui/chat-styles').some(style=>style.id===out.chatStyle))out.chatStyle='classic';if(!['left','right'].includes(out.chatAlign))out.chatAlign='left';
  if(!['custom','standard','matte-light','matte-dark','artwork'].includes(out.autoTheme))out.autoTheme='custom';
  if(!['dominant','vibrant'].includes(out.autoPalette))out.autoPalette='dominant';

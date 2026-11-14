@@ -16,3 +16,20 @@
 #chat-overlay[data-style=minimal] .chat-avatar{width:24px;height:24px;border-radius:50%;font-size:12px}
 #chat-overlay[data-style=minimal] .chat-nickname{display:inline;margin-right:8px;font-size:.8em}
 #chat-overlay[data-style=minimal] .chat-comment{display:inline;font-size:.9em}
+/* Shared geometry overrides apply to every chat style. */
+#chat-overlay{width:min(100%,var(--chat-width,480px));height:min(100%,var(--chat-height,700px));padding:var(--chat-margin,14px)}
+#chat-overlay[data-style] .chat-message{max-width:var(--message-width,100%);gap:var(--avatar-gap,12px)}
+#chat-overlay[data-align=left] .chat-message{align-self:flex-start}
+#chat-overlay[data-style=classic] .chat-message,#chat-overlay[data-style=neon] .chat-message,#chat-overlay[data-style=minimal] .chat-message{width:var(--message-width,100%);padding:var(--padding-y,10px) var(--padding-x,12px)}
+#chat-overlay[data-style=soft] .chat-copy,#chat-overlay[data-style=sticker] .chat-copy{padding:calc(var(--padding-y,10px) + 6px) var(--padding-x,12px) var(--padding-y,10px);min-width:0}
+#chat-overlay[data-style=soft] .chat-nickname,#chat-overlay[data-style=sticker] .chat-nickname{margin-top:calc(-1 * var(--padding-y,10px) - 17px)}
+#chat-overlay{--style-avatar-size:32px;--style-name-size:.75em}
+#chat-overlay[data-style=soft],#chat-overlay[data-style=sticker]{--style-avatar-size:28px;--style-name-size:.65em}
+#chat-overlay[data-style=minimal]{--style-avatar-size:24px;--style-name-size:.8em}
+#chat-overlay[data-style] .chat-avatar{width:var(--avatar-size,var(--style-avatar-size));height:var(--avatar-size,var(--style-avatar-size));font-size:calc(var(--avatar-size,var(--style-avatar-size)) * .5)}
+#chat-overlay[data-avatar-shape=circle] .chat-avatar{border-radius:50%}
+#chat-overlay[data-avatar-shape=rounded] .chat-avatar{border-radius:25%}
+#chat-overlay[data-avatar-shape=square] .chat-avatar{border-radius:0}
+#chat-overlay[data-avatars=hidden] .chat-avatar{display:none}
+#chat-overlay[data-style] .chat-nickname{font-size:var(--name-size,var(--style-name-size))}
+#chat-overlay .chat-comment{line-height:var(--line-height,145%)}

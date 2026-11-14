@@ -16,7 +16,7 @@
 1. Abre **Chat LIVE** e introduce el @usuario del creador que está en directo.
 2. Si el servicio de firma requiere una clave de Euler Stream, introdúcela en el campo opcional. No se guarda en el perfil ni se incluye en el overlay. No introduzcas cookies ni tu contraseña de TikTok.
 3. Pulsa **Conectar**. Verás el estado, los mensajes aceptados y los filtrados.
-4. Copia la URL del chat a una fuente Navegador de OBS de **480 × 700**:
+4. Copia la URL del chat a una fuente Navegador de OBS con las dimensiones de **Tamaño y distribución** (por defecto **480 × 700**):
 
    ```text
    http://127.0.0.1:17834/chat
@@ -30,6 +30,8 @@ http://127.0.0.1:17834/chat?mock=true
 
 El modo mock genera ejemplos en el navegador y no conecta a un directo. Puedes diseñar nombres, mensajes, fuente, tamaño y fondos por mensaje. El documento del overlay es completamente transparente.
 
+- **Composición del chat:** ancho de 240–1920 px, alto de 160–2160 px, margen exterior, ancho máximo y relleno de los mensajes. La vista previa encaja el lienzo completo a escala; configura las mismas medidas en la fuente de OBS o LIVE Studio.
+- **Avatares y lectura:** tamaño de avatar hasta 128 px (0 usa el estilo), forma circular/redondeada/cuadrada, separación, ocultación completa, tamaño del nombre e interlineado. Los controles se conservan al cambiar de estilo y se guardan en el perfil.
 - **Estilos de chat:** Clásico, Burbuja pastel, Sticker con estrellas, Neón y Línea minimalista. Se aplican en vivo desde Diseño del chat, con paletas iniciales editables, alineación izquierda/derecha, redondeado, separación y borde. Elegir un estilo cambia sus colores iniciales; no modifica la fuente ni los filtros.
 - **Fotos de perfil:** muestra el avatar de TikTok en mensajes y regalos. Puedes desactivarlo desde Diseño del chat → Mostrar fotos de perfil; si no hay foto o no carga, se usan las iniciales. Las imágenes se cargan desde los CDN de TikTok sin enviar el enlace privado del overlay como referencia.
 - Anti-spam con deduplicación por usuario durante 30 segundos, límite de emojis y separación mínima entre mensajes.

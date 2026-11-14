@@ -65,3 +65,6 @@ nav button.active{background:linear-gradient(110deg,#FF4A7A20,#8B5CF618);color:#
 .tiktok-url{margin:16px 0}.tiktok-url code{overflow-wrap:anywhere;min-width:0}#tiktok-status{color:#C4B5FD;font-size:12px;line-height:1.6}button:disabled{opacity:.45;cursor:default}
 
 .text-input-label{display:grid;gap:8px;font-size:12px;color:#CBD5E1;margin-bottom:14px}.text-input-label input{width:100%;padding:11px 12px;border:1px solid #353449;border-radius:9px;color:#F8FAFC;background:#090A10}.text-input-label input::placeholder{color:#64748B}.chat-url{display:block;overflow-wrap:anywhere;color:#C4B5FD;font-size:11px;padding:12px 0 18px}#chat-state{font-size:13px;color:#C4B5FD}.stage.chat-stage{height:clamp(200px,32vh,320px)}#chat-preview{position:absolute;width:min(100%,480px);height:100%;left:50%;top:0;transform:translateX(-50%);max-width:100%}
+.field input[type=number]{width:105px;min-width:0;background:#202134;color:#F8FAFC;border:1px solid #353449;border-radius:5px;padding:6px}
+#chat-preview{top:50%;left:50%;max-width:none;transform-origin:center center}
+.stage.chat-stage{height:clamp(220px,38vh,380px)}
