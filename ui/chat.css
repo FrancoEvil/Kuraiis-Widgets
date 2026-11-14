@@ -33,3 +33,8 @@
 #chat-overlay[data-avatars=hidden] .chat-avatar{display:none}
 #chat-overlay[data-style] .chat-nickname{font-size:var(--name-size,var(--style-name-size))}
 #chat-overlay .chat-comment{line-height:var(--line-height,145%)}
+/* Names contribute to the bubble width without exceeding the overlay. */
+.chat-nickname{white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis}
+#chat-overlay[data-style=soft] .chat-copy,#chat-overlay[data-style=sticker] .chat-copy{display:grid;grid-template-columns:minmax(0,1fr)}
+#chat-overlay[data-style=soft] .chat-nickname,#chat-overlay[data-style=sticker] .chat-nickname{display:block;width:auto;max-width:100%;overflow-wrap:normal;justify-self:start;margin-left:0;margin-right:0}
+#chat-overlay[data-align=right][data-style=soft] .chat-nickname,#chat-overlay[data-align=right][data-style=sticker] .chat-nickname{justify-self:end;margin-left:0;margin-right:0}

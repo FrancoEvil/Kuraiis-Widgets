@@ -25,6 +25,19 @@ test('la clave opcional no queda en el singleton del conector',async()=>{
  const {createConnector}=require('../src/live-chat');const c=await createConnector('kuraii_test','unit-test-key');try{const sdk=await import('tiktok-live-connector');expect(sdk.SignConfig.apiKey).toBeUndefined();expect(sdk.SignConfig.cachedInstance).toBeUndefined();}finally{await c.disconnect();}
 });
 
+test('un mensaje corto no divide el nombre y los nombres largos se acotan en las burbujas',async()=>{
+ const x=await setup({chatCooldown:0,chatFadeSeconds:0,chatWidth:240});let app;
+ try{app=await electron.launch({args:[path.resolve('tests/fixtures/layout-main.cjs')]});const page=await app.firstWindow();await page.setViewportSize({width:240,height:500});await page.goto(x.url+'/chat');await expect(page.locator('#connection-text')).toHaveText('Sin conexión a un directo.');
+ for(const style of ['soft','sticker'])for(const align of ['left','right']){
+  x.set({chatStyle:style,chatAlign:align,chatNameSize:24,chatMessageWidth:100,chatPaddingX:12});await expect(page.locator('#chat-overlay')).toHaveAttribute('data-style',style);await expect(page.locator('#chat-overlay')).toHaveAttribute('data-align',align);x.hub.clear();
+  x.hub.ingest('chat',{user:{id:'capy',nickname:'Capy'},comment:'ola'});await expect(page.locator('.chat-nickname')).toHaveText('Capy');
+  const size=await page.locator('.chat-nickname').evaluate(el=>({width:el.clientWidth,content:el.scrollWidth,height:el.clientHeight,line:parseFloat(getComputedStyle(el).lineHeight),padding:parseFloat(getComputedStyle(el).paddingTop)+parseFloat(getComputedStyle(el).paddingBottom)}));expect(size.content).toBeLessThanOrEqual(size.width+1);expect(size.height-size.padding).toBeLessThanOrEqual(size.line+1);
+  x.hub.clear();x.hub.ingest('chat',{user:{id:'long',nickname:'Nombre_de_usuario_muy_largo_'.repeat(3)},comment:'x'});await expect(page.locator('.chat-nickname')).toContainText('Nombre_de_usuario');await expect(page.locator('.chat-nickname')).toHaveCSS('text-overflow','ellipsis');
+  const bounds=await page.locator('.chat-nickname').evaluate(el=>{const a=el.getBoundingClientRect(),b=el.closest('.chat-message').getBoundingClientRect();return {left:a.left,right:a.right,parentLeft:b.left,parentRight:b.right,lines:(el.clientHeight-parseFloat(getComputedStyle(el).paddingTop)-parseFloat(getComputedStyle(el).paddingBottom))/parseFloat(getComputedStyle(el).lineHeight)};});expect(bounds.lines).toBeLessThan(1.1);expect(bounds.left).toBeGreaterThanOrEqual(bounds.parentLeft-1);expect(bounds.right).toBeLessThanOrEqual(bounds.parentRight+1);
+ }
+ }finally{if(app)await app.close();await x.close();}
+});
+
 test('fotos de perfil: esquemas de TikTok, URLs seguras, carga, alternativa y ocultación en HTTPS',async()=>{
  const avatar=require('../ui/chat-avatar');const {normalizeEvent}=require('../src/live-chat');const photo='https://p16-sign.tiktokcdn-us.com/avatar.jpeg?signature=test';
  expect(normalizeEvent({user:{avatarThumb:{urlList:[photo]}}}).user.avatarUrl).toBe(photo);
