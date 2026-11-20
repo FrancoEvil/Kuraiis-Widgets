@@ -14,6 +14,7 @@ function migrateLegacy(input){
 }
 function validate(input){
  const out={...defaults};for(const k of Object.keys(out)){const v=input?.[k];if(typeof out[k]==='boolean'&&typeof v==='boolean')out[k]=v;if(typeof out[k]==='string'&&typeof v==='string'&&v.length<100)out[k]=v;}
+ out.chatBlockedWords=require('./chat-word-filter').sanitizeList(input?.chatBlockedWords);
  for(const [k,min,max]of ranges)if(Number.isFinite(input?.[k]))out[k]=Math.max(min,Math.min(max,input[k]));
  for(const k of colorKeys)if(!/^#[0-9a-f]{6}$/i.test(out[k]))out[k]=defaults[k];
  if(!['auto','circle','rounded','square'].includes(out.chatAvatarShape))out.chatAvatarShape='auto';

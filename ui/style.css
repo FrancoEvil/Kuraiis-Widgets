@@ -68,3 +68,4 @@ nav button.active{background:linear-gradient(110deg,#FF4A7A20,#8B5CF618);color:#
 .field input[type=number]{width:105px;min-width:0;background:#202134;color:#F8FAFC;border:1px solid #353449;border-radius:5px;padding:6px}
 #chat-preview{top:50%;left:50%;max-width:none;transform-origin:center center}
 .stage.chat-stage{height:clamp(220px,38vh,380px)}
+.textarea-field{display:grid;gap:8px;margin-top:12px}.textarea-field textarea{width:100%;min-height:140px;max-height:360px;resize:vertical;border:1px solid #353449;border-radius:8px;padding:12px;background:#090A10;color:#F8FAFC;font:13px/1.6 'Segoe UI',sans-serif}.textarea-field textarea::placeholder{color:#64748B}textarea:focus-visible{outline:2px solid #FF4A7A;outline-offset:4px}

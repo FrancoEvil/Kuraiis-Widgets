@@ -1,3 +1,4 @@
+const {WordFilter}=require('./chat-word-filter');
 const {visualSettings}=require('../ui/chat-settings');const avatar=require('../ui/chat-avatar');const crypto=require('node:crypto');
 const clean=(value,max)=>Array.from(String(value??'').replace(/[\u0000-\u0008\u000b-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g,'')).slice(0,max).join('');
 const segmenter=new Intl.Segmenter('es',{granularity:'grapheme'});const emojiPattern=/\p{Extended_Pictographic}|\p{Regional_Indicator}{2}|[0-9#*]\ufe0f?\u20e3/u;
@@ -33,17 +34,18 @@ async function createConnector(name,key=''){
  finally{sdk.SignConfig.apiKey=undefined;sdk.SignConfig.cachedInstance=undefined;}
 }
 function createChat({getSettings,onChange=()=>{},factory=createConnector}){
- let state={status:'disconnected',username:'',message:'Sin conexión a un directo.',accepted:0,blocked:0},client=null,generation=0,retryTimer,attempt=0,credential='',counter=0,epoch=crypto.randomBytes(8).toString('hex');const events=[],servers=new Set(),filter=new SpamFilter();
+ let state={status:'disconnected',username:'',message:'Sin conexión a un directo.',accepted:0,blocked:0},client=null,generation=0,retryTimer,attempt=0,credential='',counter=0,epoch=crypto.randomBytes(8).toString('hex');const events=[],servers=new Set(),filter=new SpamFilter(),wordFilter=new WordFilter();
  const emit=(name,data)=>{for(const io of servers)(name==='chat:message'?io.to('live'):io).emit(name,data);};
  const set=patch=>{state={...state,...patch};emit('chat:state',state);onChange();};
  function ingest(type,data){
   data=normalizeEvent(data);const settings=getSettings();if(type==='gift'&&(!settings.chatShowGifts||(Number(data.giftDetails?.giftType??data.giftType)===1&&!data.repeatEnd)))return;
-  if(!filter.accept(type,data,settings)){state.blocked++;return;}
+  if((type==='chat'&&wordFilter.matches(data.comment,settings))||!filter.accept(type,data,settings)){state.blocked++;return;}
   const user=data.user||data,nickname=clean(user.nickname||user.nickName||user.uniqueId||'Anónimo',64);
   const event={id:epoch+':'+(++counter),type,nickname,avatarUrl:user.avatarUrl||'',createdAt:Date.now()};
   if(type==='chat')event.comment=clean(data.comment,320);else{event.giftName=clean(data.giftDetails?.giftName||data.extendedGiftInfo?.name||data.giftName||'Regalo',80);event.count=Math.max(1,Math.min(9999,Number(data.repeatCount)||1));}
   events.push(event);while(events.length>200)events.shift();state.accepted++;emit('chat:message',event);return event;
  }
+ function preferencesChanged(){const settings=getSettings(),removed=[];for(let i=events.length-1;i>=0;i--)if(events[i].type==='chat'&&wordFilter.matches(events[i].comment,settings)){removed.push(events[i].id);events.splice(i,1);}if(removed.length){state.blocked+=removed.length;emit('chat:remove',{ids:removed});onChange();}emit('chat:config',visualSettings(settings));}
  function clear(){events.length=0;filter.clear();epoch=crypto.randomBytes(8).toString('hex');emit('chat:reset',{epoch});}
  function release(){const old=client;client=null;if(old){old.removeAllListeners();try{Promise.resolve(old.disconnect()).catch(()=>{});}catch{}}}
  function schedule(token){if(token!==generation||retryTimer||!getSettings().chatReconnect||attempt>=5)return;const delay=Math.min(30000,2000*2**attempt++);set({status:'reconnecting',message:'Conexión interrumpida. Reintentando…'});retryTimer=setTimeout(()=>{retryTimer=null;void establish(token);},delay);retryTimer.unref?.();}
@@ -59,6 +61,6 @@ function createChat({getSettings,onChange=()=>{},factory=createConnector}){
  async function connect(name,key=''){const normalized=username(name);await disconnect();credential=String(key||'').trim().slice(0,512);attempt=0;clear();set({status:'connecting',username:normalized,accepted:0,blocked:0,message:'Conectando a @'+normalized+'…'});await establish(generation);return {...state};}
  async function disconnect(){generation++;clearTimeout(retryTimer);credential='';attempt=0;release();set({status:'disconnected',message:'Sin conexión a un directo.'});return {...state};}
  function attach(server,{path='/chat-socket'}={}){const {Server}=require('socket.io');const io=new Server(server,{path,serveClient:false,maxHttpBufferSize:16384,transports:['websocket','polling'],cors:{origin:false}});servers.add(io);io.use((socket,next)=>{if(io.engine.clientsCount>32)return next(Error('Too many connections'));next();});io.on('connection',socket=>{const mock=socket.handshake.auth?.mock===true;if(!mock)socket.join('live');socket.emit('chat:initial',{settings:visualSettings(getSettings()),events:mock?[]:[...events],state:{...state},epoch});});return ()=>{servers.delete(io);io.close();};}
- return {getState:()=>({...state}),connect,disconnect,ingest,clear,attach,preferencesChanged:()=>emit('chat:config',visualSettings(getSettings())),dispose(){void disconnect();for(const io of servers)io.close();servers.clear();}};
+ return {getState:()=>({...state}),connect,disconnect,ingest,clear,attach,preferencesChanged,dispose(){void disconnect();for(const io of servers)io.close();servers.clear();}};
 }
 module.exports={createChat,createConnector,normalizeEvent,SpamFilter,clean,username};

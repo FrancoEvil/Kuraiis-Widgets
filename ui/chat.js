@@ -31,6 +31,7 @@
  const base=new URL('.',location.href).pathname;
  const socket=io(location.origin,{path:base+'chat-socket',auth:{mock},transports:['websocket','polling'],reconnection:true,reconnectionDelay:1000,reconnectionDelayMax:10000});
  socket.on('chat:initial',data=>{configure(data.settings);status(data.state);if(!mock){if(epoch!==data.epoch)reset(data.epoch);for(const event of data.events||[])enqueue(event);}});
+ socket.on('chat:remove',data=>{if(mock)return;const ids=new Set((data.ids||[]).slice(0,200));pending=pending.filter(event=>!ids.has(event.id));records=records.filter(item=>{if(!ids.has(item.event.id))return true;item.node.remove();return false;});});
  socket.on('chat:config',configure);socket.on('chat:state',status);socket.on('chat:message',event=>{if(!mock)enqueue(event);});socket.on('chat:reset',data=>{if(!mock)reset(data.epoch);});socket.on('disconnect',()=>status({status:'disconnected',message:'Reconectando con la app…'}));socket.on('connect_error',()=>status({status:'error',message:'No se pudo conectar con la app.'}));
  window.addEventListener('pagehide',()=>{clearInterval(mockTimer);clearInterval(cleanup);socket.disconnect();pending=[];records=[];seen.clear();});
 })();

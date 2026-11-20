@@ -25,6 +25,16 @@ test('la clave opcional no queda en el singleton del conector',async()=>{
  const {createConnector}=require('../src/live-chat');const c=await createConnector('kuraii_test','unit-test-key');try{const sdk=await import('tiktok-live-connector');expect(sdk.SignConfig.apiKey).toBeUndefined();expect(sdk.SignConfig.cachedInstance).toBeUndefined();}finally{await c.disconnect();}
 });
 
+test('palabras bloqueadas: no se emiten, se retiran del historial HTTPS y no se publica la lista',async()=>{
+ const x=await setup({chatAntiSpam:false,chatFadeSeconds:0});let app,overlay,socket;
+ try{socket=io(x.url,{path:'/chat-socket',transports:['websocket'],autoConnect:false});const initial=new Promise(r=>socket.once('chat:initial',r));socket.connect();const init=await initial;expect(init.settings.chatBlockedWords).toBeUndefined();expect(init.settings.chatWordFilter).toBeUndefined();const received=[];socket.on('chat:message',e=>received.push(e));
+  overlay=await createPublicOverlay(()=>({settings:defaults,media:{cover:''}}),{chatHub:x.hub});app=await electron.launch({args:[path.resolve('tests/fixtures/layout-main.cjs')]});const page=await app.firstWindow();await page.goto(overlay.origin+overlay.prefix+'chat');await expect(page.locator('#connection-text')).toHaveText('Sin conexión a un directo.');
+  x.hub.ingest('chat',{user:{id:'a',nickname:'A'},comment:'no se que porno blah blah'});await expect(page.locator('.chat-comment')).toHaveText('no se que porno blah blah');x.set({chatBlockedWords:'porno\nporn*\n*er'});await expect(page.locator('.chat-message')).toHaveCount(0);expect(x.hub.getState().blocked).toBe(1);
+  x.hub.ingest('chat',{user:{id:'b'},comment:'PORNOGRAFÍA'});x.hub.ingest('chat',{user:{id:'c'},comment:'comer'});x.hub.ingest('chat',{user:{id:'d'},comment:'mensaje permitido'});await expect(page.locator('.chat-comment')).toHaveText('mensaje permitido');await expect.poll(()=>received.length).toBe(2);expect(x.hub.getState().blocked).toBe(3);
+  await page.reload();await expect(page.locator('.chat-comment')).toHaveText('mensaje permitido');x.set({chatWordFilter:false});x.hub.ingest('chat',{user:{id:'e'},comment:'porno'});await expect(page.locator('.chat-comment').last()).toHaveText('porno');
+ }finally{socket?.disconnect();if(app)await app.close();overlay?.close();await x.close();}
+});
+
 test('un mensaje corto no divide el nombre y los nombres largos se acotan en las burbujas',async()=>{
  const x=await setup({chatCooldown:0,chatFadeSeconds:0,chatWidth:240});let app;
  try{app=await electron.launch({args:[path.resolve('tests/fixtures/layout-main.cjs')]});const page=await app.firstWindow();await page.setViewportSize({width:240,height:500});await page.goto(x.url+'/chat');await expect(page.locator('#connection-text')).toHaveText('Sin conexión a un directo.');
